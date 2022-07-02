@@ -102,7 +102,7 @@ class Debugger_DAP : public cbDebuggerPlugin
         virtual bool SwitchToThread(int thread_number) { return false;};
 
         // watches
-        void UpdateWatches(int updateType);
+        void UpdateDAPWatches(int updateType);
         virtual cb::shared_ptr<cbWatch> AddWatch(const wxString & symbol, bool update);
         virtual cb::shared_ptr<cbWatch> AddWatch(dbg_DAP::GDBWatch * watch, cb_unused bool update);
         cb::shared_ptr<cbWatch> AddMemoryRange(uint64_t address, uint64_t size, const wxString &symbol, bool update)  {return 0;};
@@ -198,11 +198,13 @@ class Debugger_DAP : public cbDebuggerPlugin
         void OnTimer(wxTimerEvent & event);
         void OnIdle(wxIdleEvent & event);
         void OnMenuInfoCommandStream(wxCommandEvent & event);
+        wxString GetShellString();
+        void LaunchDAPDebugger(const wxString & dap_debugger, const wxString & dap_port_number);
         int LaunchDebugger(cbProject * project,
-                           wxString const & dap_debugger,
-                           wxString const & debuggee,
-                           wxString const & dap_port_number,
-                           wxString const & working_dir,
+                           const wxString & dap_debugger,
+                           const wxString & debuggee,
+                           const wxString & dap_port_number,
+                           const wxString & working_dir,
                            int pid,
                            bool console,
                            StartType start_type);
