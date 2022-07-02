@@ -8,7 +8,7 @@
 #define _DEBUGGER_GDB_MI_ACTIONS_H_
 
 // System and library includes
-#include <tr1/memory>
+#include <memory>
 #include <tr1/unordered_map>
 #include <map>
 

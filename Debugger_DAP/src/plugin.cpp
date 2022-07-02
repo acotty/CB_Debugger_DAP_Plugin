@@ -594,12 +594,23 @@ int Debugger_DAP::LaunchDebugger(   cbProject * project,
         m_pLogger->LogGDBMsgType(__PRETTY_FUNCTION__, __LINE__, wxString::Format(_("DEBUGGEE: %s"), debuggee), dbg_DAP::LogPaneLogger::LineType::UserDisplay);
     }
 
+    const wxString shell(Manager::Get()->GetConfigManager("app")->Read("/console_shell", DEFAULT_CONSOLE_SHELL));
+
     wxString dapStartCmd;
-    dapStartCmd << "cmd /k " << dap_debugger;
+    if (platform::windows)
+    {
+        dapStartCmd.Format("%s /k \'%s\'", shell, dap_debugger);
+    }
+    else
+    {
+        dapStartCmd.Format("%s \'%s\'", shell, dap_debugger);
+    }
+
     if (!dap_port_number.IsEmpty())
     {
         dapStartCmd << " -port " << dap_port_number;
     }
+    m_pLogger->LogGDBMsgType(__PRETTY_FUNCTION__, __LINE__, wxString::Format(_("dapStartCmd: %s"), dapStartCmd), dbg_DAP::LogPaneLogger::LineType::UserDisplay);
     // start the dap_debugger process
     m_dapPid = wxExecute(dapStartCmd, wxEXEC_ASYNC | wxEXEC_MAKE_GROUP_LEADER);
 
@@ -2279,7 +2290,7 @@ bool Debugger_DAP::SaveStateToFile(cbProject* pProject)
 
     // ******************** Save breakpoints ********************
     tinyxml2::XMLElement* pElementBreakpointList = doc.NewElement("BreakpointsList");
-    pElementBreakpointList->SetAttribute("count", m_breakpoints.size());
+    pElementBreakpointList->SetAttribute("count", static_cast<int64_t>(m_breakpoints.size()));
     tinyxml2::XMLNode* pBreakpointMasterNode = rootnode->InsertEndChild(pElementBreakpointList);
 
     for (dbg_DAP::GDBBreakpointsContainer::iterator it = m_breakpoints.begin(); it != m_breakpoints.end(); ++it)
@@ -2293,7 +2304,7 @@ bool Debugger_DAP::SaveStateToFile(cbProject* pProject)
 
     // ********************  Save Watches ********************
     tinyxml2::XMLElement* pElementWatchesList = doc.NewElement("WatchesList");
-    pElementWatchesList->SetAttribute("count", m_watches.size());
+    pElementWatchesList->SetAttribute("count", static_cast<int64_t>(m_watches.size()));
     tinyxml2::XMLNode* pWatchesMasterNode = rootnode->InsertEndChild(pElementWatchesList);
 
     for (dbg_DAP::GDBWatchesContainer::iterator it = m_watches.begin(); it != m_watches.end(); ++it)
@@ -2784,5 +2795,6 @@ void Debugger_DAP::OnRunInTerminalRequest(DAPEvent& event)
 
 
 
-// C:\msys64\mingw64\bin\lldb-vscode.exe -port 12345
-// /usr/bin/lldb-vscode-14 -port 12345
+// Windows: C:\msys64\mingw64\bin\lldb-vscode.exe -port 12345
+// Linux: /usr/bin/lldb-vscode-14 -port 12345
+// MACOS:: /usr/local/Cellar/llvm/14.0.6/bin/lldb-vscode -port 12345 -port 12345

@@ -50,8 +50,16 @@ namespace dbg_DAP
             {
                 wxString oldPath = XRCCTRL(*this, "txtDAPExecutable", wxTextCtrl)->GetValue();
                 Manager::Get()->GetMacrosManager()->ReplaceEnvVars(oldPath);
-                wxFileDialog dlg(this, _("Select executable file"), wxEmptyString, oldPath,
-                                 wxFileSelectorDefaultWildcardStr, wxFD_OPEN | wxFD_FILE_MUST_EXIST);
+                wxFileDialog dlg(this,
+                                 _("Select executable file"),
+                                 wxEmptyString,
+                                 oldPath,
+                                 wxFileSelectorDefaultWildcardStr,
+                                 wxFD_OPEN | wxFD_FILE_MUST_EXIST
+                                 #if defined(__WXMAC__) and  wxCHECK_VERSION(3,1,3)   // wxFD_SHOW_HIDDEN added in 3.1.3
+                                    | wxFD_SHOW_HIDDEN | compatibility::wxHideReadonly   // Needed to access /usr etc on MAC
+                                 #endif //WXMAC and //wx 3.1.3 or greater
+                               );
                 PlaceWindow(&dlg);
 
                 if (dlg.ShowModal() == wxID_OK)

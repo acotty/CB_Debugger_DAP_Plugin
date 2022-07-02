@@ -10,7 +10,7 @@
 // System and library includes
 #include <deque>
 #include <tinyxml2.h>
-#include <tr1/memory>
+#include <memory>
 #include <wx/sizer.h>
 #include <wx/string.h>
 #include <scrollingdialog.h>

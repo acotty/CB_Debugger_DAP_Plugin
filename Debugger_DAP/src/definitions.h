@@ -11,7 +11,7 @@
 #include <deque>
 #include <unordered_map>
 #include <tinyxml2.h>
-#include <tr1/memory>
+#include <memory>
 #include <wx/sizer.h>
 #include <wx/string.h>
 #include <scrollingdialog.h>
@@ -564,17 +564,17 @@ namespace dbg_DAP
                 return m_symbol;
             }
 
-            void SetSymbol(const wxString& symbol) override
+            void SetSymbol(const wxString& symbol)
             {
                 m_symbol = symbol;
             }
 
-            uint64_t GetAddress() const override
+            uint64_t GetAddress() const
             {
                 return m_address;
             }
 
-            void SetAddress(uint64_t address) override
+            void SetAddress(uint64_t address)
             {
                 m_address = address;
             }
@@ -590,27 +590,27 @@ namespace dbg_DAP
                 return true;
             }
 
-            bool GetIsValueErrorMessage() override
+            bool GetIsValueErrorMessage()
             {
                 return m_ValueErrorMessage;
             }
 
-            void SetIsValueErrorMessage(bool value) override
+            void SetIsValueErrorMessage(bool value)
             {
                 m_ValueErrorMessage = value;
             }
 
-            void GetFullWatchString(wxString & full_watch) const override
+            void GetFullWatchString(wxString & full_watch) const
             {
                 full_watch = m_value;
             }
 
-            void GetType(wxString & type) const
+            void GetType(wxString & type) const override
             {
                 type = m_type;
             }
 
-            void SetType(const wxString & type)
+            void SetType(const wxString & type) override
             {
                 m_type = type;
             }
@@ -632,7 +632,7 @@ namespace dbg_DAP
             wxString GetWatchFormatTowxString();
             WatchFormat GetWatchFormatFromwxString(wxString wFormat);
 
-            wxString GetDebugString() const
+            wxString GetDebugString() const override
             {
                 m_debug_string = m_id + "->" + m_symbol + " = " + m_value;
                 return m_debug_string;
@@ -700,16 +700,16 @@ namespace dbg_DAP
                 return m_symbol;
             }
 
-            void SetSymbol(const wxString& symbol) override
+            void SetSymbol(const wxString& symbol)
             {
                 m_symbol = symbol;
             }
 
-            uint64_t GetAddress() const override
+            uint64_t GetAddress() const
             {
                 return m_address;
             }
-            void SetAddress(uint64_t address) override
+            void SetAddress(uint64_t address)
             {
                 m_address = address;
             }
@@ -721,12 +721,12 @@ namespace dbg_DAP
 
             bool SetValue(const wxString &value) override;
 
-            bool GetIsValueErrorMessage() override
+            bool GetIsValueErrorMessage()
             {
                 return m_ValueErrorMessage;
             }
 
-            void SetIsValueErrorMessage(bool value) override
+            void SetIsValueErrorMessage(bool value)
             {
                 m_ValueErrorMessage = value;
             }

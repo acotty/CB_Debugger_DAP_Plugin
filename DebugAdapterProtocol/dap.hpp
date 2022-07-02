@@ -11,6 +11,16 @@
 #include <vector>
 #include <wx/string.h>
 
+#if wxVERSION_NUMBER < 3100
+namespace std
+{
+template <>
+struct hash<wxString> {
+    std::size_t operator()(const wxString& s) const { return hash<std::wstring>{}(s.ToStdWstring()); }
+};
+} // namespace std
+#endif
+
 /// C++ Implementation of Debug Adapter Protocol (DAP)
 /// The Debug Adapter Protocol defines the protocol used between an editor or
 /// IDE and a debugger or runtime The implementation is based on the
@@ -59,6 +69,26 @@
 namespace dap
 {
 void WXDLLIMPEXP_DAP Initialize();
+
+/// Enviroment format
+/// some adapters (e.g. codelldb) accpets the environment in the form of:
+/// {"ENV_1": "value", "ENV_2": 1}
+/// and others (e.g. lldb-vscode) uses this format:
+/// ["ENV_1=value", "ENV_2=1]
+enum class EnvFormat {
+    DICTIONARY,
+    LIST,
+    NONE, // the adapter does not accept env
+};
+
+struct WXDLLIMPEXP_DAP Environment {
+    EnvFormat format = EnvFormat::DICTIONARY;
+    std::unordered_map<wxString, wxString> vars;
+
+    Json To() const;
+    void From(const Json& json);
+};
+
 // base class representing anything
 
 struct WXDLLIMPEXP_DAP Any {
@@ -127,6 +157,8 @@ protected:
     ProtocolMessage::Ptr_t New(const wxString& name, const std::unordered_map<wxString, onNewObject>& pool);
 
 public:
+    //ObjGenerator() {};
+
     static ObjGenerator& Get();
     /**
      * @brief create new ProtocolMessage.
@@ -353,11 +385,7 @@ struct WXDLLIMPEXP_DAP Breakpoint : public Any {
     int endColumn = -1;
 
     /// implement simple operator==
-    bool operator==(const Breakpoint& other) const
-    {
-        return (!source.path.empty() && source.path == other.source.path && line == other.line) ||
-               (!source.name.empty() && source.name == other.source.name);
-    }
+    bool operator==(const Breakpoint& other) const;
 
     ANY_CLASS(Breakpoint);
     JSON_SERIALIZE();
@@ -504,6 +532,9 @@ struct WXDLLIMPEXP_DAP LaunchRequestArguments : public Any {
 
     /// working directory
     wxString cwd;
+
+    /// environment variables
+    Environment env;
 
     ANY_CLASS(LaunchRequestArguments);
     JSON_SERIALIZE();
