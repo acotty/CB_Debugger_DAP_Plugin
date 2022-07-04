@@ -262,7 +262,7 @@ void Debugger_DAP::OnIdle(wxIdleEvent & event)
 //    }
 //    else
 //    {
-//        event.Skip();
+        event.Skip();
 //    }
 }
 
@@ -592,6 +592,7 @@ void Debugger_DAP::LaunchDAPDebugger(const wxString & dap_debugger, const wxStri
     if (platform::windows)
     {
         dapStartCmd = wxString::Format("%s /k %s -port %s", shell, dap_debugger, dap_port_number);
+        //dapStartCmd = wxString::Format("cmd /k %s -port %s", shell, dap_debugger, dap_port_number);
     }
     else
     {
